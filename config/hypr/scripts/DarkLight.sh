@@ -43,7 +43,7 @@ ensure_wayland_env() {
 }
 ensure_wayland_env
 notif="${XDG_CONFIG_HOME:-$HOME/.config}/swaync/images/bell.png"
-wallust_rofi="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/wallust/templates/colors-rofi.rasi"
+wallust_rofi="${XDG_CONFIG_HOME:-$HOME/.config}/wallust/templates/colors-rofi.rasi"
 theme_state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/hypr"
 theme_state_file="$theme_state_dir/theme_mode"
 legacy_theme_state_file="$HOME/.cache/.theme_mode"
@@ -52,7 +52,7 @@ user_kitty_conf="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/UserConfigs/kitty.conf"
 fallback_kitty_conf="${XDG_CONFIG_HOME:-$HOME/.config}/kitty/kitty.conf"
 kitty_conf="$user_kitty_conf"
 
-wallust_config="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/wallust/wallust.toml"
+wallust_config="${XDG_CONFIG_HOME:-$HOME/.config}/wallust/wallust.toml"
 pallete_dark="dark16"
 pallete_light="light16"
 qt5ct_dark="${XDG_CONFIG_HOME:-$HOME/.config}/qt5ct/colors/Catppuccin-Mocha.conf"
@@ -64,7 +64,6 @@ notify_enabled=1
 preserve_wallpaper=0
 forced_mode=""
 no_restart=0
-no_wallust=0
 
 ensure_managed_kitty_conf() {
     if [[ -f "$user_kitty_conf" && -r "$user_kitty_conf" ]]; then
@@ -120,9 +119,6 @@ while [ $# -gt 0 ]; do
         --no-restart)
             no_restart=1
             ;;
-        --no-wallust)
-            no_wallust=1
-            ;;
         --help)
             cat <<'EOF'
 Usage: DarkLight.sh [--apply-current] [--mode Dark|Light] [--no-notify] [--preserve-wallpaper] [--no-restart]
@@ -141,9 +137,8 @@ done
 
 # Signal running processes to prepare for theme change.
 # Skip hiding waybar on startup (--no-restart) so it stays visible while colors regenerate.
-# swaync is excluded: SIGUSR1 kills it and makes its unit restart.
 if [ "$no_restart" -eq 0 ]; then
-    for pid in waybar rofi ags swaybg; do
+    for pid in waybar rofi swaync ags swaybg; do
         killall -SIGUSR1 "$pid"
     done
 fi
@@ -193,10 +188,10 @@ notify_user() {
 # Use sed to replace the palette setting in the wallust config files
 if [ "$next_mode" = "Dark" ]; then
     sed -i 's/^palette = .*/palette = "'"$pallete_dark"'"/' "$wallust_config" 2>/dev/null || true
-    [ -f "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/wallust/wallust-v4.toml" ] && sed -i 's/^style = .*/style = "dark"/' "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/wallust/wallust-v4.toml" 2>/dev/null || true
+    [ -f "${XDG_CONFIG_HOME:-$HOME/.config}/wallust/wallust-v4.toml" ] && sed -i 's/^style = .*/style = "dark"/' "${XDG_CONFIG_HOME:-$HOME/.config}/wallust/wallust-v4.toml" 2>/dev/null || true
 else
     sed -i 's/^palette = .*/palette = "'"$pallete_light"'"/' "$wallust_config" 2>/dev/null || true
-    [ -f "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/wallust/wallust-v4.toml" ] && sed -i 's/^style = .*/style = "light"/' "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/wallust/wallust-v4.toml" 2>/dev/null || true
+    [ -f "${XDG_CONFIG_HOME:-$HOME/.config}/wallust/wallust-v4.toml" ] && sed -i 's/^style = .*/style = "light"/' "${XDG_CONFIG_HOME:-$HOME/.config}/wallust/wallust-v4.toml" 2>/dev/null || true
 fi
 
 # Function to set Waybar style
@@ -401,9 +396,11 @@ set_custom_gtk_theme() {
     for dir in "${theme_search_dirs[@]}"; do
         if [ -d "$dir" ]; then
             while IFS= read -r -d '' theme_search; do
-                local t_name
-                t_name="$(basename "$theme_search")"
-                [[ " ${themes[*]} " =~ " ${t_name} " ]] || themes+=("$t_name")
+                if [ -d "$theme_search/gtk-3.0" ] || [ -d "$theme_search/gtk-4.0" ]; then
+                    local t_name
+                    t_name="$(basename "$theme_search")"
+                    [[ " ${themes[*]} " =~ " ${t_name} " ]] || themes+=("$t_name")
+                fi
             done < <(find "$dir" -maxdepth 1 -type d -iname "$search_keywords" -print0 2>/dev/null)
         fi
     done
@@ -497,9 +494,8 @@ set_custom_gtk_theme "$next_mode"
 # Update theme mode for the next cycle
 update_theme_mode
 
-if [ "$no_wallust" -eq 0 ]; then
-    ${SCRIPTSDIR}/WallustSwww.sh "${next_wallpaper:-$wallpaper_current}"
-fi
+
+${SCRIPTSDIR}/WallustSwww.sh "${next_wallpaper:-$wallpaper_current}"
 
 if [ "$no_restart" -eq 0 ]; then
     sleep 2
@@ -508,9 +504,7 @@ if [ "$no_restart" -eq 0 ]; then
     # waybar module on-click, so it lives in waybar.service's cgroup. Killing waybar makes
     # systemd tear down the whole unit, taking this script with it before Refresh.sh runs.
     # Refresh.sh restarts waybar detached from that cgroup instead.
-    # swaync is excluded: Refresh.sh below reloads it in place and picks up the
-    # style.css written above. Killing it here would drop it out of its unit.
-    for pid1 in rofi ags swaybg; do
+    for pid1 in rofi swaync ags swaybg; do
         killall "$pid1"
     done
     sleep 1
@@ -520,8 +514,6 @@ else
     # Reload waybar in-place so it picks up the newly generated wallust colors.
     # SIGUSR2 = reload config/CSS without restarting the process.
     systemctl --user reload waybar.service 2>/dev/null || killall -SIGUSR2 waybar 2>/dev/null || true
-    # Reload swaync config and CSS in-place
-    (swaync-client -R -rs --skip-wait >/dev/null 2>&1 &)
 fi
 
 # Display notifications for theme and icon changes
