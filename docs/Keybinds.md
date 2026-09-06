@@ -37,6 +37,7 @@ Source: `config/hypr/lua/keybinds.lua`
 - `SUPER + SHIFT + A` — Animations menu (`Animations.sh`)
 - `SUPER + W` — Select wallpaper (`WallpaperSelect.sh`)
 - `SUPER + SHIFT + W` — Wallpaper effects (`WallpaperEffects.sh`)
+- `SUPER + CTRL + W` — QS Wallpaper Picker (`qs-wallpaper-picker.sh`)
 - `CTRL + ALT + W` — Random wallpaper (`WallpaperRandom.sh`)
 - `SUPER + CTRL + O` — Toggle active window opacity (`setprop active opaque toggle`)
 - `SUPER + ALT + O` — Toggle blur (`ChangeBlur.sh`)

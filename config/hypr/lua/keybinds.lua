@@ -140,6 +140,7 @@ local app_binds = {
   { "SUPER SHIFT", "M", "$HOME/.config/hypr/UserScripts/RofiBeats.sh", "online music" },
   { "SUPER", "W", "$HOME/.config/hypr/scripts/WallpaperSelect.sh", "select wallpaper" },
   { "SUPER SHIFT", "W", "$HOME/.config/hypr/scripts/WallpaperEffects.sh", "wallpaper effects" },
+  { "SUPER CTRL", "W", "$HOME/.config/hypr/scripts/qs-wallpaper-picker.sh", "QS Wallpaper Picker" },
   { "CTRL ALT", "W", "$HOME/.config/hypr/scripts/WallpaperRandom.sh", "random wallpaper" },
   { "SUPER SHIFT", "K", "$HOME/.config/hypr/scripts/KeyBinds.sh", "search keybinds" },
   { "SUPER SHIFT", "A", "$HOME/.config/hypr/scripts/Animations.sh", "animations menu" },

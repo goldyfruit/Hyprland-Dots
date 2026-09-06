@@ -492,6 +492,12 @@ bind(
   { description = "wallpaper effects" }
 )
 bind(
+  "SUPER CTRL",
+  "W",
+  exec_cmd("$HOME/.config/hypr/scripts/qs-wallpaper-picker.sh"),
+  { description = "QS Wallpaper Picker" }
+)
+bind(
   "CTRL ALT",
   "W",
   exec_cmd("$HOME/.config/hypr/UserScripts/WallpaperRandom.sh"),

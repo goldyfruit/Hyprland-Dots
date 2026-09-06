@@ -28,6 +28,13 @@
 --    bind("SUPER SHIFT", "V", exec_cmd("pavucontrol"), { description = "Audio Control" })
 --    bind("SUPER", "X", dispatch("killactive"), { description = "Close active window" })
 --
+--    -- unbind default wallpaper selector (SUPER+W) and bind QS Wallpaper Picker:
+--    -- unbind("SUPER", "W")
+--    -- bind("SUPER", "W", exec_cmd("$HOME/.config/hypr/scripts/qs-wallpaper-picker.sh"), { description = "QS Wallpaper Picker" })
+--
+--    -- Or bind QS Wallpaper Picker to custom keybind:
+--    -- bind("SUPER CTRL", "W", exec_cmd("$HOME/.config/hypr/scripts/qs-wallpaper-picker.sh"), { description = "QS Wallpaper Picker" })
+--
 -- 2. OVERRIDING AN EXISTING COMBO WITH A DIFFERENT APP/COMMAND:
 --    -- To replace what SUPER+Return opens (default: kitty):
 --    unbind("SUPER", "Return")
