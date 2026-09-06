@@ -935,16 +935,6 @@ apply_window_rule({
 })
 
 apply_window_rule({
-  name = "QS Wallpaper Picker",
-  match = {
-    title = "^(wallpaper-picker)$",
-  },
-  float = true,
-  center = true,
-  opacity = 1.0,
-})
-
-apply_window_rule({
   name = "Settings (tag)",
   match = {
     tag = "settings",

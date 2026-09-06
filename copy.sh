@@ -963,7 +963,7 @@ else
   fi
 fi
 
-# Ensure overview, qs-hyprview, and qs-wallpaper-picker subdirectories exist
+# Ensure overview and qs-hyprview subdirectories exist
 DIRPATH_OVERVIEW="$DIRPATH_QS/overview"
 if [ ! -d "$DIRPATH_OVERVIEW" ] && [ -d "$DOTFILES_DIR/config/quickshell/overview" ]; then
   echo "${INFO} - Copying quickshell overview config..." 2>&1 | tee -a "$LOG"
@@ -975,12 +975,6 @@ if [ ! -d "$DIRPATH_QS_HYPRVIEW" ] && [ -d "$DOTFILES_DIR/config/quickshell/qs-h
   echo "${INFO} - Copying quickshell qs-hyprview config..." 2>&1 | tee -a "$LOG"
   cp -r "$DOTFILES_DIR/config/quickshell/qs-hyprview" "$DIRPATH_QS/" 2>&1 | tee -a "$LOG"
   echo "${OK} - Quickshell qs-hyprview config copied successfully" 2>&1 | tee -a "$LOG"
-fi
-DIRPATH_QS_WALLPAPER="$DIRPATH_QS/qs-wallpaper-picker"
-if [ ! -d "$DIRPATH_QS_WALLPAPER" ] && [ -d "$DOTFILES_DIR/config/quickshell/qs-wallpaper-picker" ]; then
-  echo "${INFO} - Copying quickshell qs-wallpaper-picker config..." 2>&1 | tee -a "$LOG"
-  cp -r "$DOTFILES_DIR/config/quickshell/qs-wallpaper-picker" "$DIRPATH_QS/" 2>&1 | tee -a "$LOG"
-  echo "${OK} - Quickshell qs-wallpaper-picker config copied successfully" 2>&1 | tee -a "$LOG"
 fi
 
 # Check for old quickshell startup commands and update them
